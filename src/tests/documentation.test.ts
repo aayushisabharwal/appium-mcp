@@ -7,6 +7,15 @@ import {afterEach, beforeEach, describe, expect, jest, test} from '@jest/globals
 jest.unstable_mockModule('../logger', () => ({
   default: {debug: () => {}, info: () => {}, warn: () => {}, error: () => {}},
 }));
+// Make the local lookup miss even when the package is installed next to appium-mcp,
+// so these tests always exercise the global lookup.
+jest.unstable_mockModule(
+  '@appium/mcp-documentation',
+  () => {
+    throw Object.assign(new Error('Cannot find package'), {code: 'ERR_MODULE_NOT_FOUND'});
+  },
+  {virtual: true},
+);
 
 const {loadDocumentationPlugin} = await import('../documentation.js');
 
